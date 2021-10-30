@@ -19,7 +19,7 @@ def rmspe(preds: np.array, actuals: np.array) -> float:
     return 100 * np.linalg.norm((actuals - preds) / actuals) / np.sqrt(preds.shape[0])
 
 
-def define_pipelines(rf_settings, xg_settings) -> Tuple[Pipeline]:
+def define_pipelines(xg_settings) -> Tuple[Pipeline]:
     # TODO remove scaler as it's not needed?
     # pipe_rf = Pipeline([
     #     (
@@ -201,21 +201,21 @@ def single_run(pipes, X_train, y_train, X_val, y_val, X_train_full, X_val_full):
         print(f'Fitting{pipe}...')
         pipe.fit(X_train, y_train)
         print('...done.')
-    print('')
-    print('Training performance:')
+    # print('')
+    # print('Training performance:')
     training_metrics = evaluate_models(
         pipes, X_train, y_train)
 
-    print(
-        'Mean as Baseline (RMSPE)',
-        rmspe(np.full_like(y_train, np.mean(
-            y_train)), y_train.to_numpy())
-    )
+    # print(
+    #     'Mean as Baseline (RMSPE)',
+    #     rmspe(np.full_like(y_train, np.mean(
+    #         y_train)), y_train.to_numpy())
+    # )
 
-    for metric in training_metrics:
-        print('')
-        for key, values in metric.items():
-            print(key, values)
+    # for metric in training_metrics:
+    #     print('')
+    #     for key, values in metric.items():
+    #         print(key, values)
 
     print('')
     print('Validation performance:')
@@ -230,7 +230,8 @@ def single_run(pipes, X_train, y_train, X_val, y_val, X_train_full, X_val_full):
     for metric in validation_metrics:
         print('')
         for key, values in metric.items():
-            print(key, values)
+            if key in ['model', 'rmspe']:
+                print(key, values)
 
     X_train.loc[:, 'Date'] = pd.to_datetime(X_train_full.loc[:, 'Date'])
     X_val.loc[:, 'Date'] = pd.to_datetime(X_val_full.loc[:, 'Date'])
